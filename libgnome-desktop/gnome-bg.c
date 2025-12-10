@@ -36,6 +36,7 @@ Author: Soren Sandmann <sandmann@redhat.com>
 #include <gio/gio.h>
 
 #include <cairo.h>
+#include <pango/pangocairo.h>
 
 #define GNOME_DESKTOP_USE_UNSTABLE_API
 #include "gnome-bg.h"
@@ -1366,6 +1367,64 @@ load_from_cache_file (GnomeBG    *bg,
 }
 
 static GdkPixbuf *
+get_pixbuf_from_text (const char *filename, int width, int height)
+{
+	char *contents = NULL;
+	gsize length = 0;
+	GError *error = NULL;
+	GdkPixbuf *pixbuf = NULL;
+	cairo_surface_t *surface;
+	cairo_t *cr;
+	PangoLayout *layout;
+	PangoFontDescription *desc;
+
+	if (!g_file_get_contents (filename, &contents, &length, &error)) {
+		if (error) g_error_free (error);
+		return NULL;
+	}
+
+	if (!g_utf8_validate (contents, length, NULL)) {
+		g_free (contents);
+		return NULL;
+	}
+
+	if (width <= 0) width = 1920;
+	if (height <= 0) height = 1080;
+
+	surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
+	cr = cairo_create (surface);
+
+	/* Background: Black */
+	cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+	cairo_paint (cr);
+
+	/* Text: Green */
+	cairo_set_source_rgb (cr, 0.0, 1.0, 0.0);
+
+	layout = pango_cairo_create_layout (cr);
+	desc = pango_font_description_from_string ("Monospace 12");
+	pango_layout_set_font_description (layout, desc);
+	pango_font_description_free (desc);
+
+	pango_layout_set_width (layout, (width - 40) * PANGO_SCALE);
+	pango_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
+	pango_layout_set_text (layout, contents, length);
+
+	cairo_move_to (cr, 20, 20);
+	pango_cairo_show_layout (cr, layout);
+
+	g_object_unref (layout);
+	cairo_destroy (cr);
+
+	pixbuf = gdk_pixbuf_get_from_surface (surface, 0, 0, width, height);
+
+	cairo_surface_destroy (surface);
+	g_free (contents);
+
+	return pixbuf;
+}
+
+static GdkPixbuf *
 get_as_pixbuf_for_size (GnomeBG    *bg,
 			const char *filename,
 			gint        num_monitor,
@@ -1407,6 +1466,9 @@ get_as_pixbuf_for_size (GnomeBG    *bg,
 				pixbuf = gdk_pixbuf_new_from_file (filename, NULL);
 			g_free (tmp);
 		}
+
+		if (!pixbuf)
+			pixbuf = get_pixbuf_from_text (filename, best_width, best_height);
 
 		if (pixbuf)
 			file_cache_add_pixbuf (bg, filename, pixbuf);
