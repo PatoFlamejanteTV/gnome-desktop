@@ -918,13 +918,14 @@ gnome_bg_draw (GnomeBG   *bg,
 	if (dest) {
 		GdkPixbuf *rotated = gdk_pixbuf_rotate_simple (dest, GDK_PIXBUF_ROTATE_UPSIDEDOWN);
 		if (rotated) {
-			if (gdk_pixbuf_get_width (rotated) == gdk_pixbuf_get_width (dest) &&
-			    gdk_pixbuf_get_height (rotated) == gdk_pixbuf_get_height (dest)) {
-				gdk_pixbuf_copy_area (rotated, 0, 0,
-						      gdk_pixbuf_get_width (rotated),
-						      gdk_pixbuf_get_height (rotated),
-						      dest, 0, 0);
-			}
+			gdk_pixbuf_composite (rotated, dest,
+					      0, 0,
+					      gdk_pixbuf_get_width (rotated),
+					      gdk_pixbuf_get_height (rotated),
+					      0, 0,
+					      1.0, 1.0,
+					      GDK_INTERP_NEAREST,
+					      255);
 			g_object_unref (rotated);
 		}
 	}
