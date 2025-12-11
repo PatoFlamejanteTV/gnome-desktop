@@ -1124,11 +1124,13 @@ gnome_desktop_thumbnail_factory_generate_thumbnail (GnomeDesktopThumbnailFactory
 
   if (pixbuf != NULL)
     {
-      GdkPixbuf *flipped = gdk_pixbuf_flip (pixbuf, FALSE);
-      if (flipped != NULL) {
-        g_object_unref (pixbuf);
-        pixbuf = flipped;
-      }
+      GdkPixbuf *rotated;
+      rotated = gdk_pixbuf_rotate_simple (pixbuf, GDK_PIXBUF_ROTATE_UPSIDEDOWN);
+      if (rotated)
+        {
+          g_object_unref (pixbuf);
+          pixbuf = rotated;
+        }
       return pixbuf;
     }
 
@@ -1165,11 +1167,13 @@ gnome_desktop_thumbnail_factory_generate_thumbnail (GnomeDesktopThumbnailFactory
 
       if (pixbuf)
         {
-          GdkPixbuf *flipped = gdk_pixbuf_flip (pixbuf, FALSE);
-          if (flipped) {
-            g_object_unref (pixbuf);
-            pixbuf = flipped;
-          }
+          GdkPixbuf *rotated;
+          rotated = gdk_pixbuf_rotate_simple (pixbuf, GDK_PIXBUF_ROTATE_UPSIDEDOWN);
+          if (rotated)
+            {
+              g_object_unref (pixbuf);
+              pixbuf = rotated;
+            }
         }
 
       return pixbuf;
