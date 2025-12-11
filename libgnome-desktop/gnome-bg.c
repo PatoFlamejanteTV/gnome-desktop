@@ -1408,7 +1408,9 @@ get_pixbuf_from_text (const char *filename, int width, int height)
 	/* Background: Black */
 	cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
 	cairo_paint (cr);
-
+	if (length > G_MAXINT)
+		length = G_MAXINT;
+	pango_layout_set_text (layout, contents, length);
 	/* Text: Green */
 	cairo_set_source_rgb (cr, 0.0, 1.0, 0.0);
 
