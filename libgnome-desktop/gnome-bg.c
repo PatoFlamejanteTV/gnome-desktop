@@ -897,6 +897,12 @@ draw_once (GnomeBG   *bg,
 			g_object_unref (pixbuf);
 			pixbuf = rotated;
 		}
+		GdkPixbuf *flipped = gdk_pixbuf_flip (pixbuf, FALSE);
+		if (flipped != NULL) {
+			g_object_unref (pixbuf);
+			pixbuf = flipped;
+		}
+		}
 
 		draw_image_area (bg,
 				 num_monitor,
@@ -2286,6 +2292,14 @@ create_thumbnail_for_filename (GnomeDesktopThumbnailFactory *factory,
 			orig_height = gdk_pixbuf_get_height (orig);
 
 			result = pixbuf_scale_to_fit (orig, THUMBNAIL_SIZE, THUMBNAIL_SIZE);
+
+			if (result) {
+				GdkPixbuf *flipped = gdk_pixbuf_flip (result, FALSE);
+				if (flipped) {
+					g_object_unref (result);
+					result = flipped;
+				}
+			}
 
 			orig_height_str = g_strdup_printf ("%d", orig_height);
 			orig_width_str = g_strdup_printf ("%d", orig_width);

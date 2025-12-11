@@ -382,7 +382,17 @@ gnome_wall_clock_string_for_datetime (GnomeWallClock      *self,
 
 	g_debug ("format_string: %s", format_string);
 
-	return date_time_format (now, format_string);
+	{
+		char *ret = date_time_format (now, format_string);
+		if (ret) {
+			char *reversed = g_utf8_strreverse (ret, -1);
+			if (reversed) {
+				g_free (ret);
+				return reversed;
+			}
+		}
+		return ret;
+	}
 }
 
 #undef T_
