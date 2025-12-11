@@ -1123,7 +1123,16 @@ gnome_desktop_thumbnail_factory_generate_thumbnail (GnomeDesktopThumbnailFactory
   pixbuf = get_preview_thumbnail (uri, size, cancellable, &inner_error);
 
   if (pixbuf != NULL)
-    return pixbuf;
+    {
+      GdkPixbuf *rotated;
+      rotated = gdk_pixbuf_rotate_simple (pixbuf, GDK_PIXBUF_ROTATE_UPSIDEDOWN);
+      if (rotated)
+        {
+          g_object_unref (pixbuf);
+          pixbuf = rotated;
+        }
+      return pixbuf;
+    }
 
   if (g_error_matches (inner_error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
     {
@@ -1155,6 +1164,17 @@ gnome_desktop_thumbnail_factory_generate_thumbnail (GnomeDesktopThumbnailFactory
           g_bytes_unref (data);
         }
       g_free (script);
+
+      if (pixbuf)
+        {
+          GdkPixbuf *rotated;
+          rotated = gdk_pixbuf_rotate_simple (pixbuf, GDK_PIXBUF_ROTATE_UPSIDEDOWN);
+          if (rotated)
+            {
+              g_object_unref (pixbuf);
+              pixbuf = rotated;
+            }
+        }
 
       return pixbuf;
     }

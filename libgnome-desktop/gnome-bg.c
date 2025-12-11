@@ -914,6 +914,21 @@ gnome_bg_draw (GnomeBG   *bg,
 	if (bg->placement != G_DESKTOP_BACKGROUND_STYLE_NONE) {
 		draw_once (bg, dest);
 	}
+
+	if (dest) {
+		GdkPixbuf *rotated = gdk_pixbuf_rotate_simple (dest, GDK_PIXBUF_ROTATE_UPSIDEDOWN);
+		if (rotated) {
+			gdk_pixbuf_composite (rotated, dest,
+					      0, 0,
+					      gdk_pixbuf_get_width (rotated),
+					      gdk_pixbuf_get_height (rotated),
+					      0, 0,
+					      1.0, 1.0,
+					      GDK_INTERP_NEAREST,
+					      255);
+			g_object_unref (rotated);
+		}
+	}
 }
 
 gboolean
@@ -1186,6 +1201,14 @@ gnome_bg_create_thumbnail (GnomeBG               *bg,
 		}
 	}
 	
+	if (result) {
+		GdkPixbuf *rotated = gdk_pixbuf_rotate_simple (result, GDK_PIXBUF_ROTATE_UPSIDEDOWN);
+		if (rotated) {
+			g_object_unref (result);
+			result = rotated;
+		}
+	}
+
 	return result;
 }
 
@@ -2325,6 +2348,14 @@ gnome_bg_create_frame_thumbnail (GnomeBG			*bg,
 		if (thumb) {
 			draw_image_for_thumb (bg, thumb, result);
 			g_object_unref (thumb);
+		}
+	}
+
+	if (result) {
+		GdkPixbuf *rotated = gdk_pixbuf_rotate_simple (result, GDK_PIXBUF_ROTATE_UPSIDEDOWN);
+		if (rotated) {
+			g_object_unref (result);
+			result = rotated;
 		}
 	}
 
