@@ -1392,7 +1392,18 @@ get_pixbuf_from_text (const char *filename, int width, int height)
 	if (height <= 0) height = 1080;
 
 	surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
+	if (cairo_surface_status (surface) != CAIRO_STATUS_SUCCESS) {
+		cairo_surface_destroy (surface);
+		g_free (contents);
+		return NULL;
+	}
 	cr = cairo_create (surface);
+	if (cairo_status (cr) != CAIRO_STATUS_SUCCESS) {
+		cairo_destroy (cr);
+		cairo_surface_destroy (surface);
+		g_free (contents);
+		return NULL;
+	}
 
 	/* Background: Black */
 	cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
