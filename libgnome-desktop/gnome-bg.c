@@ -897,13 +897,11 @@ draw_once (GnomeBG   *bg,
 			g_object_unref (pixbuf);
 			pixbuf = rotated;
 		}
-
-		{
-			GdkPixbuf *flipped = gdk_pixbuf_flip (pixbuf, FALSE);
-			if (flipped != NULL) {
-				g_object_unref (pixbuf);
-				pixbuf = flipped;
-			}
+		GdkPixbuf *flipped = gdk_pixbuf_flip (pixbuf, FALSE);
+		if (flipped != NULL) {
+			g_object_unref (pixbuf);
+			pixbuf = flipped;
+		}
 		}
 
 		draw_image_area (bg,
