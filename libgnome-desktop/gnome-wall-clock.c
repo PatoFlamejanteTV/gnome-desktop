@@ -386,8 +386,10 @@ gnome_wall_clock_string_for_datetime (GnomeWallClock      *self,
 		char *ret = date_time_format (now, format_string);
 		if (ret) {
 			char *reversed = g_utf8_strreverse (ret, -1);
-			g_free (ret);
-			return reversed;
+			if (reversed) {
+				g_free (ret);
+				return reversed;
+			}
 		}
 		return ret;
 	}
