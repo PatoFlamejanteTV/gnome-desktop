@@ -1125,7 +1125,7 @@ gnome_desktop_thumbnail_factory_generate_thumbnail (GnomeDesktopThumbnailFactory
   if (pixbuf != NULL)
     {
       GdkPixbuf *flipped = gdk_pixbuf_flip (pixbuf, FALSE);
-      if (flipped) {
+      if (flipped != NULL) {
         g_object_unref (pixbuf);
         pixbuf = flipped;
       }
